@@ -1,1 +1,1 @@
-See the [Projects](https://github.com/usf-cs212-2017/lectures/wiki/Projects) page for details.
+See the [Projects](https://github.com/usf-cs212-2018/lectures/wiki/Projects) page for details.
