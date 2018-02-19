@@ -6,12 +6,15 @@ import java.util.TreeMap;
 
 public class DataBase {
 	
+	//data members
 	private TreeMap<String,TreeMap> Data;
 	
+	//constructor
 	public DataBase() {
 		Data = new TreeMap<String,TreeMap>();
 	}
 	
+	//add data
 	public void addData(WordIndex index) {
 		
 		for(String word: index.getWordSet()) {
@@ -32,7 +35,8 @@ public class DataBase {
 		}	
 	}
 	
-	public List<Integer> SortInt(Set<Integer> set){
+	//sorter
+	private List<Integer> SortInt(Set<Integer> set){
 		List<Integer> ints = new ArrayList<Integer>();  
 		for(Integer num: set) {
 			ints.add(num);
@@ -45,6 +49,7 @@ public class DataBase {
 		return Data.containsKey(word);
 	}
 	
+	//toString methods
 	public String toStringPostion(String word, String html) {
 		String result = "";
 		Set<Integer> set = (Set<Integer>) Data.get(word).get(html);

@@ -5,12 +5,36 @@ import java.util.Set;
 
 public class WordIndex {
 	
+	//Data members
 	private Map<String, Set<Integer>> index;
 	private String html; 
 	
+	//constructor
 	public WordIndex() {
 		index = new HashMap<String, Set<Integer>>();
 		html = null;
+	}
+	
+	public WordIndex(String html) {
+		index = new HashMap<String, Set<Integer>>();
+		this.html = html.substring(html.indexOf("html"));
+	}
+	
+	//getter
+	public Set<String> getWordSet(){
+		return index.keySet();
+	}
+	
+	public Map<String, Set<Integer>> getIndex(){
+		return index;
+	}
+	
+	public int words() {
+		return index.size();
+	}
+	
+	public boolean contains(String word) {
+		return index.containsKey(word);
 	}
 	
 	public String getHtml() {
@@ -21,11 +45,7 @@ public class WordIndex {
 		return index.get(key);
 	}
 	
-	public WordIndex(String html) {
-		index = new HashMap<String, Set<Integer>>();
-		this.html = html.substring(html.indexOf("html"));
-	}
-	
+	//add data
 	public void add(String word, int position) {
 
 		HashSet<Integer> tmp = null;
@@ -55,22 +75,7 @@ public class WordIndex {
 		return 0;
 	}
 	
-	public Set<String> getWordSet(){
-		return index.keySet();
-	}
-	
-	public Map<String, Set<Integer>> getIndex(){
-		return index;
-	}
-	
-	public int words() {
-		return index.size();
-	}
-	
-	public boolean contains(String word) {
-		return index.containsKey(word);
-	}
-	
+	//tostring method
 	public String toString() {
 		return html + "\n "+ index.toString();
 	}
