@@ -1,5 +1,3 @@
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 /**
  * Cleans simple, validating HTML 4/5 into plain-text words using regular
  * expressions.
@@ -56,6 +54,7 @@ public class HTMLcleaner {
 		return html.replaceAll(regex, " ");
 	}
 
+	
 	/**
 	 * Replaces everything between the element tags and the element tags
 	 * themselves with a single space. For example, consider the html code: *
