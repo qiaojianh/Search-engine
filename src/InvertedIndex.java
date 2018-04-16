@@ -162,7 +162,6 @@ public class InvertedIndex {
 			if (f.isDirectory()) {
 				getDirectory(f);
 			} else if (f.getName().toLowerCase().endsWith("html") || f.getName().toLowerCase().endsWith("htm")) {
-//				System.out.println(f.getPath().toString());  
 				addHtmlDate(f.getPath().toString());
 			}
 		}
