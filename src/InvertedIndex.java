@@ -174,7 +174,9 @@ public class InvertedIndex {
 		if (file.isDirectory()) {
 			getDirectory(file);
 		}else {
-			addHtmlDate(file.getPath());
+			if(file.getName().toLowerCase().endsWith("html") || file.getName().toLowerCase().endsWith("htm")) {
+				addHtmlDate(file.getPath());
+			}
 		}
 		this.lock.unlockReadWrite();
 	}
