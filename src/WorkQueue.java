@@ -84,8 +84,6 @@ public class WorkQueue {
 	public void finish() {
 		
 		synchronized (queue) {
-//			System.out.println(this.queue.size());
-//			while (!queue.isEmpty() || pending != 0) {
 				while (!queue.isEmpty() && pending > 0) {
 					try {
 						queue.wait();
@@ -93,13 +91,6 @@ public class WorkQueue {
 						e.printStackTrace();
 					}
 				}
-//				try {
-//					queue.wait(10);
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
 		}
 		
 	}
