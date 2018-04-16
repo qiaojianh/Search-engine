@@ -3,14 +3,14 @@
  * @author qiaojianhu
  *
  */
-public class resultOfPartialSearch implements Comparable<resultOfPartialSearch>{
+public class ResultOfPartialSearch implements Comparable<ResultOfPartialSearch>{
 	
 	/**
 	 * store Frequency, Position and Location
 	 */
-	int count;
-	int index;
-	String where;
+	private int count;
+	private int index;
+	private String where;
 	
 	/**
 	 *  Initializes Frequency, Position and Location
@@ -18,7 +18,7 @@ public class resultOfPartialSearch implements Comparable<resultOfPartialSearch>{
 	 * @param count
 	 * @param index
 	 */
-	public resultOfPartialSearch(String where, int count, int index) {
+	public ResultOfPartialSearch(String where, int count, int index) {
 		this.index = index;
 		this.count = count;
 		this.where = where;
@@ -78,7 +78,7 @@ public class resultOfPartialSearch implements Comparable<resultOfPartialSearch>{
 	 * compares by Locations in ascending order. 
 	 */
 	@Override
-	public int compareTo(resultOfPartialSearch o) {
+	public int compareTo(ResultOfPartialSearch o) {
 		if(Integer.compare( o.count,count)==0) {
 			if(Integer.compare( index,o.index)==0) {
 				return where.compareTo(o.where);

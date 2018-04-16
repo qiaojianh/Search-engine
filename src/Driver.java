@@ -10,14 +10,35 @@ public class Driver {
 	
 	public static void main(String[] args) {
 		
-
+		//Initializes all members
 		InvertedIndex data = new InvertedIndex();
 		ArgumentMap maps = new ArgumentMap();
 		PartialSearch pdata = new PartialSearch();
 		ArrayList<String> terms = new ArrayList<String>();
+		Bulider b = new Bulider();
 		
+		int threads = 1;
+		//parse args into Argument map
 		maps.parse(args);
-		
+				
+		//if has flags "-threads" 
+		if(maps.hasFlag("-threads")) {
+			if(maps.getString("-threads") == null) {
+				threads = 5;
+			}else {
+				if(b.isNumeric(maps.getString("-threads"))) {
+					threads = Integer.parseInt(maps.getString("-threads"));
+					if(threads < 1) {
+						threads = 5;
+					}
+				}else {
+					threads = 5;
+				}
+			}
+				
+		}
+				
+		//if has flags "-path" 
 		if( maps.hasFlag("-path")) {
 			if(maps.getString("-path") == null) {
 				return;
@@ -26,38 +47,44 @@ public class Driver {
 			if (!file.exists()) {
 				return;
 			}else {
-				if (file.isDirectory()) {
-					Bulider.getDirectory(file, data);
+				if(threads == 1) {
+					data.buildData(file);
 				}else {
-					Bulider.addHtmlDate(file.getPath(),data);
+					data.setData(b.finddata(file, threads));
 				}
 			}
 		}
 		
+		//if has flags "-index"
 		if( maps.hasFlag("-index")) {
 			if(maps.numFlags() == 1) {
-				Bulider.makeEmptyFile(maps.getString("-index"));
+				b.makeEmptyFile(maps.getString("-index"));
 				return;
 			}
-			Bulider.makeFile(maps.getString("-index"), data);
+			b.makeFile(maps.getString("-index"), data);
 		}
 		
 		if( maps.hasFlag("-query")) {
 			if(maps.getString("-query") == null) {
 				return;
 			}
-			Bulider.readTerms(maps.getString("-query"),terms);
-			for(int i = 0; i < terms.size();i++ ) {
-				pdata.addData(terms.get(i),data,maps.hasFlag("-exact")?true:false);
+			b.readTerms(maps.getString("-query"),terms);
+			if(threads == 1) {
+				for(int i = 0; i < terms.size();i++ ) {
+					pdata.addData(terms.get(i),data,maps.hasFlag("-exact")?true:false);
+				}
+			}else {
+				pdata.setData(b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data));
 			}
 		}
 		
+		//if has flags "-results"
 		if( maps.hasFlag("-results")) {
 			if(maps.numFlags() == 1) {
-				Bulider.makeEmptyFile(maps.getString("-results"));
+				b.makeEmptyFile(maps.getString("-results"));
 				return;
 			}
-			Bulider.makeResultFile(pdata,maps.getString("-results"));
+			b.makeResultFile(pdata,maps.getString("-results"));
 		}
 					
 	}

@@ -18,13 +18,21 @@ public class PartialSearch {
 	/**
 	 * Stores a mapping of words to the information about the words.
 	 */
-	private HashMap<String,ArrayList<resultOfPartialSearch>> data;
+	private HashMap<String,ArrayList<ResultOfPartialSearch>> data;
 	
 	/**
 	 * Initializes the data.
 	 */
 	public PartialSearch() {
-		data = new HashMap<String,ArrayList<resultOfPartialSearch>>();
+		data = new HashMap<String,ArrayList<ResultOfPartialSearch>>();
+	}
+	
+	public HashMap<String,ArrayList<ResultOfPartialSearch>> getData(){
+		return data;
+	}
+	
+	public void setData( HashMap<String,ArrayList<ResultOfPartialSearch>> data) {
+		this.data = data;
 	}
 	
 	/**
@@ -40,7 +48,7 @@ public class PartialSearch {
 	 * 		do we need exact search
 	 */
 	public void addData(String term, InvertedIndex invertedIndexData, boolean ifExact) {
-		ArrayList<resultOfPartialSearch> objects = new  ArrayList<resultOfPartialSearch>();
+		ArrayList<ResultOfPartialSearch> objects = new  ArrayList<ResultOfPartialSearch>();
 		ArrayList<String> htmls = new  ArrayList<String>();
 		String[] terms = term.toLowerCase().split(" ");
 		
@@ -52,16 +60,16 @@ public class PartialSearch {
 					
 						for(String html : invertedIndexData.getData().get(word).keySet()) {							
 							if(!htmls.contains(html)) {								
-								objects.add(new resultOfPartialSearch(html,invertedIndexData.size(word, html),minValue(invertedIndexData.getData().get(word).get(html))));	
+								objects.add(new ResultOfPartialSearch(html,invertedIndexData.size(word, html),minValue(invertedIndexData.getData().get(word).get(html))));	
 								htmls.add(html);
 							}else {
 								for(int j = 0; j< objects.size();j++) {
 									if(objects.get(j).getWhere().equals(html)) {
 										int min = objects.get(j).getIndex();
 										if(minValue(invertedIndexData.getData().get(word).get(html)) < min) {
-											objects.set(j, new resultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),minValue(invertedIndexData.getSet(word, html))));
+											objects.set(j, new ResultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),minValue(invertedIndexData.getSet(word, html))));
 										}else {
-											objects.set(j, new resultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),min));
+											objects.set(j, new ResultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),min));
 										}
 									}
 								}
@@ -73,16 +81,16 @@ public class PartialSearch {
 						
 						for(String html : invertedIndexData.getData().get(word).keySet()) {							
 							if(!htmls.contains(html)) {								
-								objects.add(new resultOfPartialSearch(html,invertedIndexData.size(word, html),minValue(invertedIndexData.getData().get(word).get(html))));	
+								objects.add(new ResultOfPartialSearch(html,invertedIndexData.size(word, html),minValue(invertedIndexData.getData().get(word).get(html))));	
 								htmls.add(html);
 							}else {
 								for(int j = 0; j< objects.size();j++) {
 									if(objects.get(j).getWhere().equals(html)) {
 										int min = objects.get(j).getIndex();
 										if(minValue(invertedIndexData.getData().get(word).get(html)) < min) {
-											objects.set(j, new resultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),minValue(invertedIndexData.getSet(word, html))));
+											objects.set(j, new ResultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),minValue(invertedIndexData.getSet(word, html))));
 										}else {
-											objects.set(j, new resultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),min));
+											objects.set(j, new ResultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),min));
 										}
 									}
 								}
@@ -127,7 +135,7 @@ public class PartialSearch {
 	 */
 	public String toStringObject(String query) {
 		String result = "";
-		ArrayList<resultOfPartialSearch> objects = data.get(query);
+		ArrayList<ResultOfPartialSearch> objects = data.get(query);
 		Collections.sort(objects);
 		for(int i = 0; i < objects.size() ; i++) {
 			result += "\t\t\t{\n";
