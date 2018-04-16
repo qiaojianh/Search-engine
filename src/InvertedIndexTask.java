@@ -13,8 +13,6 @@ public class InvertedIndexTask implements Runnable {
 		}
 		
 		
-		
-	
 		@Override
 		public void run() {
 			synchronized (data) {
