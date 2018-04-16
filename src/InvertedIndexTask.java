@@ -20,7 +20,6 @@ public class InvertedIndexTask implements Runnable {
 		
 		@Override
 		public void run() {
-//			synchronized (data) {
 				File file = path.toFile();
 				if (file.getName().toLowerCase().endsWith("html") || file.getName().toLowerCase().endsWith("htm")) {
 					WordIndex index = new WordIndex(file.toString());
@@ -38,12 +37,10 @@ public class InvertedIndexTask implements Runnable {
 					}
 
 					index.addAll(HTMLcleaner.stripHTML(html).toLowerCase().replaceAll("(?U)[^\\p{Alpha}\\p{Space}]+", " ").replaceAll("(?U)\\p{Space}+", " ").trim().split(" "));
-//					data.addHtmlDate(path.toString());
 					synchronized (data) {
 						data.addData(index);
 					}
 				}
-//			}
 		}
 
 }
