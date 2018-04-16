@@ -68,6 +68,7 @@ public class Driver {
 			b.makeFile(maps.getString("-index"), data);
 		}
 		
+		//if has flags "-query"
 		if( maps.hasFlag("-query")) {
 			if(maps.getString("-query") == null) {
 				return;

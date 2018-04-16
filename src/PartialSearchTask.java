@@ -1,5 +1,3 @@
-import java.nio.file.Path;
-
 public class PartialSearchTask implements Runnable {
 
 	private PartialSearch pdata;
