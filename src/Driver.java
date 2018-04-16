@@ -47,10 +47,14 @@ public class Driver {
 			if (!file.exists()) {
 				return;
 			}else {
-				if(threads == 1) {
-					data.buildData(file);
+				if(file.isDirectory()) {
+					if(threads == 1) {
+						data.buildData(file);
+					}else {
+						data.setData(b.finddata(file, threads));
+					}
 				}else {
-					data.setData(b.finddata(file, threads));
+					data.buildData(file);
 				}
 			}
 		}
