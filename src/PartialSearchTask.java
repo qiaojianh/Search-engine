@@ -18,9 +18,9 @@ public class PartialSearchTask implements Runnable {
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
-		synchronized (pdata) {
-			pdata.addData(term, data, excat);
-		}
+
+		pdata.addData(term, data, excat);
+
 		
 	}
 	

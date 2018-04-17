@@ -37,9 +37,9 @@ public class InvertedIndexTask implements Runnable {
 					}
 
 					index.addAll(HTMLcleaner.stripHTML(html).toLowerCase().replaceAll("(?U)[^\\p{Alpha}\\p{Space}]+", " ").replaceAll("(?U)\\p{Space}+", " ").trim().split(" "));
-					synchronized (data) {
+//					synchronized (data) {
 						data.addData(index);
-					}
+//					}
 				}
 		}
 

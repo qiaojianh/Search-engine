@@ -31,7 +31,7 @@ public class InvertedIndex {
 	public InvertedIndex() {
 		this.lock = new ReadWriteLock();
 		data = new TreeMap<String,TreeMap<String,Set<Integer>>>();
-		lock = new ReadWriteLock();
+//		lock = new ReadWriteLock();
 	}
 	
 	/**
@@ -40,7 +40,12 @@ public class InvertedIndex {
 	 */
 	
 	public ReadWriteLock getLock() {
-		return lock;
+		this.lock.lockReadOnly();
+		try {
+			return lock;
+		} finally {
+			this.lock.unlockReadOnly();
+		}
 	}
 	
 	public TreeMap<String,TreeMap<String,Set<Integer>>> getData(){
@@ -52,11 +57,11 @@ public class InvertedIndex {
 		}
 	}
 	
-	public void setData(TreeMap<String,TreeMap<String,Set<Integer>>> data){
-		this.lock.lockReadWrite();
+//	public void setData(TreeMap<String,TreeMap<String,Set<Integer>>> data){
+//		this.lock.lockReadWrite();
 //		this.data = data;
-		this.lock.unlockReadWrite();
-	}
+//		this.lock.unlockReadWrite();
+//	}
 	
 	
 	
@@ -115,15 +120,15 @@ public class InvertedIndex {
 	 * @param index
 	 */
 	public void addData(WordIndex index) {
-		this.lock = new ReadWriteLock();
-//		this.lock.lockReadWrite();
+
+		this.lock.lockReadWrite();
 		for(String word: index.getWordSet()) {
 			
 			if(word.equals("")) {
 				continue;
 			}
 			
-			if(contains(word)) {
+			if(data.containsKey(word)) {
 				TreeMap<String,Set<Integer>> tmp = data.get(word);
 				tmp.put(index.getHtml(), index.getSet(word));
 				data.put(word, tmp);
@@ -202,20 +207,6 @@ public class InvertedIndex {
 		return ints;
 	}
 		
-	/**
-	 * if contains the key
-	 * @param word
-	 * @return
-	 */
-	public boolean contains(String word) {
-		this.lock.lockReadOnly();
-		try {
-			return data.containsKey(word);
-		} finally {
-			this.lock.unlockReadOnly();
-		}
-		
-	}
 	
 	/**
 	 * toString for position

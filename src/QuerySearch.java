@@ -109,8 +109,9 @@ public class QuerySearch {
 		lock.unlockReadOnly();
 		
 		Arrays.sort(terms);
-		String rebulidTerms = Arrays.toString(terms).replaceAll("\\pP", "").trim();	
 		synchronized (data) {
+			String rebulidTerms = Arrays.toString(terms).replaceAll("\\pP", "").trim();	
+		
 			if(!data.containsKey(rebulidTerms) && !rebulidTerms.equals("")) {
 				data.put(rebulidTerms, objects);
 			}

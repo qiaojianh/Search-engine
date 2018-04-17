@@ -51,7 +51,8 @@ public class Driver {
 					if(threads == 1) {
 						data.buildData(file);
 					}else {
-						data.setData(b.finddata(file, threads));
+//						data.setData(b.finddata(file, threads));
+						b.finddata(file, threads);
 					}
 				}else {
 					data.buildData(file);
