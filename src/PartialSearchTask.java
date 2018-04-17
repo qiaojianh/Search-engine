@@ -1,6 +1,6 @@
 public class PartialSearchTask implements Runnable {
 
-	private PartialSearch pdata;
+	private QuerySearch pdata;
 	
 	private String term;
 	
@@ -8,7 +8,7 @@ public class PartialSearchTask implements Runnable {
 	
 	private InvertedIndex data;
 	
-	public PartialSearchTask( String term,PartialSearch pdata, Boolean excat , InvertedIndex data) {
+	public PartialSearchTask( String term,QuerySearch pdata, Boolean excat , InvertedIndex data) {
 		this.term = term;
 		this.pdata = pdata;
 		this.excat = excat;

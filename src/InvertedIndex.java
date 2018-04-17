@@ -22,7 +22,7 @@ public class InvertedIndex {
 	/**
 	 *  Stores a tree mapping of words to the positions the words were found and the html name.
 	 */
-	private TreeMap<String,TreeMap<String,Set<Integer>>> data;
+	private static TreeMap<String,TreeMap<String,Set<Integer>>> data;
 	private ReadWriteLock lock;
 	
 	/**
@@ -38,6 +38,11 @@ public class InvertedIndex {
 	 * get the data
 	 * @return
 	 */
+	
+	public ReadWriteLock getLock() {
+		return lock;
+	}
+	
 	public TreeMap<String,TreeMap<String,Set<Integer>>> getData(){
 		this.lock.lockReadOnly();
 		try {
@@ -49,7 +54,7 @@ public class InvertedIndex {
 	
 	public void setData(TreeMap<String,TreeMap<String,Set<Integer>>> data){
 		this.lock.lockReadWrite();
-		this.data = data;
+//		this.data = data;
 		this.lock.unlockReadWrite();
 	}
 	
@@ -111,6 +116,7 @@ public class InvertedIndex {
 	 */
 	public void addData(WordIndex index) {
 		this.lock = new ReadWriteLock();
+//		this.lock.lockReadWrite();
 		for(String word: index.getWordSet()) {
 			
 			if(word.equals("")) {

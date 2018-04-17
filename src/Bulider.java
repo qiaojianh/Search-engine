@@ -24,7 +24,7 @@ public class Bulider {
 	 * @param pdata
 	 * @param resultFileName
 	 */
-	public  void makeResultFile(PartialSearch pdata, String resultFileName) {
+	public  void makeResultFile(QuerySearch pdata, String resultFileName) {
 		try (BufferedWriter bufw = new BufferedWriter(new FileWriter(resultFileName));){
 			bufw.write(pdata.toString());		
 		} catch (IOException e) {
@@ -57,7 +57,7 @@ public class Bulider {
 	 * @return
 	 */
 	public  HashMap<String,ArrayList<ResultOfPartialSearch>> findPdata( ArrayList<String> terms ,int threads, boolean excat, InvertedIndex data ){
-		PartialSearch pdata = new PartialSearch();
+		QuerySearch pdata = new QuerySearch();
 		WorkQueue queue = new WorkQueue(threads);
 		for (String term : terms) {
 			queue.execute(new PartialSearchTask(term, pdata,excat,data));

@@ -12,18 +12,19 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.TreeMap;
 
-public class PartialSearch {
+public class QuerySearch {
 	
 	/**
 	 * Stores a mapping of words to the information about the words.
 	 */
-	private HashMap<String,ArrayList<ResultOfPartialSearch>> data;
+	private static HashMap<String,ArrayList<ResultOfPartialSearch>> data;
 	
 	/**
 	 * Initializes the data.
 	 */
-	public PartialSearch() {
+	public QuerySearch() {
 		data = new HashMap<String,ArrayList<ResultOfPartialSearch>>();
 	}
 	
@@ -31,9 +32,9 @@ public class PartialSearch {
 		return data;
 	}
 	
-	public void setData( HashMap<String,ArrayList<ResultOfPartialSearch>> data) {
-		this.data = data;
-	}
+//	public void setData( HashMap<String,ArrayList<ResultOfPartialSearch>> data) {
+//		this.data = data;
+//	}
 	
 	/**
 	 * first of all we get each query and go through in  invertedIndex database
@@ -48,25 +49,30 @@ public class PartialSearch {
 	 * 		do we need exact search
 	 */
 	public void addData(String term, InvertedIndex invertedIndexData, boolean ifExact) {
+		
+		ReadWriteLock lock = invertedIndexData.getLock();
+		lock.lockReadOnly();
+		
+		TreeMap<String,TreeMap<String,Set<Integer>>> tmpData = invertedIndexData.getData();
 		ArrayList<ResultOfPartialSearch> objects = new  ArrayList<ResultOfPartialSearch>();
 		ArrayList<String> htmls = new  ArrayList<String>();
 		String[] terms = term.toLowerCase().split(" ");
 		
 		for(int i = 0; i < terms.length; i++) {
-			for(String word:invertedIndexData.getData().keySet() ) {
+			for(String word:tmpData.keySet() ) {
 				
 				if(ifExact) {
 					if(word.equals(terms[i])) {
 					
-						for(String html : invertedIndexData.getData().get(word).keySet()) {							
+						for(String html : tmpData.get(word).keySet()) {							
 							if(!htmls.contains(html)) {								
-								objects.add(new ResultOfPartialSearch(html,invertedIndexData.size(word, html),minValue(invertedIndexData.getData().get(word).get(html))));	
+								objects.add(new ResultOfPartialSearch(html,invertedIndexData.size(word, html),minValue(tmpData.get(word).get(html))));	
 								htmls.add(html);
 							}else {
 								for(int j = 0; j< objects.size();j++) {
 									if(objects.get(j).getWhere().equals(html)) {
 										int min = objects.get(j).getIndex();
-										if(minValue(invertedIndexData.getData().get(word).get(html)) < min) {
+										if(minValue(tmpData.get(word).get(html)) < min) {
 											objects.set(j, new ResultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),minValue(invertedIndexData.getSet(word, html))));
 										}else {
 											objects.set(j, new ResultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),min));
@@ -79,15 +85,15 @@ public class PartialSearch {
 				}else {
 					if(word.startsWith(terms[i])) {
 						
-						for(String html : invertedIndexData.getData().get(word).keySet()) {							
+						for(String html :tmpData.get(word).keySet()) {							
 							if(!htmls.contains(html)) {								
-								objects.add(new ResultOfPartialSearch(html,invertedIndexData.size(word, html),minValue(invertedIndexData.getData().get(word).get(html))));	
+								objects.add(new ResultOfPartialSearch(html,invertedIndexData.size(word, html),minValue(tmpData.get(word).get(html))));	
 								htmls.add(html);
 							}else {
 								for(int j = 0; j< objects.size();j++) {
 									if(objects.get(j).getWhere().equals(html)) {
 										int min = objects.get(j).getIndex();
-										if(minValue(invertedIndexData.getData().get(word).get(html)) < min) {
+										if(minValue(tmpData.get(word).get(html)) < min) {
 											objects.set(j, new ResultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),minValue(invertedIndexData.getSet(word, html))));
 										}else {
 											objects.set(j, new ResultOfPartialSearch(html,objects.get(j).getCount()+invertedIndexData.size(word, html),min));
@@ -100,11 +106,14 @@ public class PartialSearch {
 				}		
 			}
 		}
+		lock.unlockReadOnly();
 		
 		Arrays.sort(terms);
-		String rebulidTerms = Arrays.toString(terms).replaceAll("\\pP", "").trim();		
-		if(!data.containsKey(rebulidTerms) && !rebulidTerms.equals("")) {
-			data.put(rebulidTerms, objects);
+		String rebulidTerms = Arrays.toString(terms).replaceAll("\\pP", "").trim();	
+		synchronized (data) {
+			if(!data.containsKey(rebulidTerms) && !rebulidTerms.equals("")) {
+				data.put(rebulidTerms, objects);
+			}
 		}
 		
 	}

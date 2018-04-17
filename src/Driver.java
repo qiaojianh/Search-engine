@@ -13,7 +13,7 @@ public class Driver {
 		//Initializes all members
 		InvertedIndex data = new InvertedIndex();
 		ArgumentMap maps = new ArgumentMap();
-		PartialSearch pdata = new PartialSearch();
+		QuerySearch pdata = new QuerySearch();
 		ArrayList<String> terms = new ArrayList<String>();
 		Bulider b = new Bulider();
 		
@@ -79,7 +79,8 @@ public class Driver {
 					pdata.addData(terms.get(i),data,maps.hasFlag("-exact")?true:false);
 				}
 			}else {
-				pdata.setData(b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data));
+				b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data);
+//				pdata.setData(b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data));
 			}
 		}
 		
