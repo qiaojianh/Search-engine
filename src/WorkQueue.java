@@ -63,6 +63,14 @@ public class WorkQueue {
 		}
 	}
 
+	private void incrementPending() {
+		synchronized (queue) {
+
+			pending++;
+		}
+
+	}
+	
 	/**
 	 * Adds a work request to the queue. A thread will process this request when
 	 * available.
@@ -72,7 +80,7 @@ public class WorkQueue {
 	 */
 	public void execute(Runnable r) {
 		synchronized (queue) {
-			pending++;
+			incrementPending();
 			queue.addLast(r);
 			queue.notifyAll();
 		}
@@ -84,13 +92,13 @@ public class WorkQueue {
 	public void finish() {
 		
 		synchronized (queue) {
-				while (!queue.isEmpty() && pending > 0) {
-					try {
-						queue.wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+			while (pending > 0) {
+				try {
+					queue.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
+			}
 		}
 		
 	}
@@ -132,7 +140,7 @@ public class WorkQueue {
 				synchronized (queue) {
 					while (queue.isEmpty() && !shutdown) {
 						try {
-							queue.wait(10);
+							queue.wait();
 						} catch (InterruptedException ex) {
 							System.err.println("Warning: Work queue interrupted.");
 							Thread.currentThread().interrupt();

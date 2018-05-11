@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 
 public class InvertedIndex {
@@ -22,7 +23,7 @@ public class InvertedIndex {
 	/**
 	 *  Stores a tree mapping of words to the positions the words were found and the html name.
 	 */
-	private static TreeMap<String,TreeMap<String,Set<Integer>>> data;
+	private TreeMap<String,TreeMap<String,Set<Integer>>> data;
 	private ReadWriteLock lock;
 	
 	/**
@@ -31,7 +32,6 @@ public class InvertedIndex {
 	public InvertedIndex() {
 		this.lock = new ReadWriteLock();
 		data = new TreeMap<String,TreeMap<String,Set<Integer>>>();
-//		lock = new ReadWriteLock();
 	}
 	
 	/**
@@ -40,30 +40,42 @@ public class InvertedIndex {
 	 */
 	
 	public ReadWriteLock getLock() {
-		this.lock.lockReadOnly();
-		try {
-			return lock;
-		} finally {
-			this.lock.unlockReadOnly();
-		}
+		return lock;
 	}
 	
 	public TreeMap<String,TreeMap<String,Set<Integer>>> getData(){
-		this.lock.lockReadOnly();
-		try {
-			return data;
-		} finally {
-			this.lock.unlockReadOnly();
-		}
+		return data;
 	}
 	
-//	public void setData(TreeMap<String,TreeMap<String,Set<Integer>>> data){
-//		this.lock.lockReadWrite();
-//		this.data = data;
-//		this.lock.unlockReadWrite();
-//	}
-	
-	
+	public int size() {
+		return data.size();
+	}
+		
+	/**
+	 * Add contents to tree-map in this class by calling a hash-map from another
+	 * class of InvertedIndex.
+	 * 
+	 * @param words
+	 *            String array of words
+	 * @param path
+	 *            path to store
+	 */
+	public void addAll(TreeMap<String, TreeMap<String, Set<Integer>>> treeMap) {
+		for (String word : treeMap.keySet()) {
+			if (this.data.containsKey(word) == false) {
+				this.data.put(word, treeMap.get(word));
+			} else {
+				for (String path : treeMap.get(word).keySet()) {
+					if (this.data.get(word).containsKey(path) == false) {
+						this.data.get(word).put(path, treeMap.get(word).get(path));
+					} else {
+						this.data.get(word).get(path).addAll(treeMap.get(word).get(path));
+					}
+
+				}
+			}
+		}
+	}
 	
 	/**
 	 * return how many times the word in the data
@@ -73,13 +85,11 @@ public class InvertedIndex {
 	 * 		how many times the word in the data
 	 */
 	public int sumOfWords(String word) {
-		this.lock = new ReadWriteLock();
 		int sum = 0;
 		TreeMap<String,Set<Integer>> tmp = data.get(word);
 		for(String key :tmp.keySet()) {
 			sum += tmp.get(key).size();
 		}
-		this.lock.unlockReadWrite();
 		return sum;
 	}
 	
@@ -92,12 +102,9 @@ public class InvertedIndex {
 	 * @return
 	 */
 	public int size(String key,String html) {
-		this.lock.lockReadOnly();
-		try {
-			return data.get(key).get(html).size();
-		} finally {
-			this.lock.unlockReadOnly();
-		}	
+		
+		return data.get(key).get(html).size();
+			
 	}
 	
 	/**
@@ -142,7 +149,6 @@ public class InvertedIndex {
 	}
 	
 	public void addHtmlDate(String htmlFile) {
-		this.lock = new ReadWriteLock();
 		WordIndex index = new WordIndex(htmlFile);
 		Path htmlPath = Paths.get(htmlFile);
 		Charset charset = Charset.forName("UTF-8");
@@ -159,12 +165,17 @@ public class InvertedIndex {
 
 		index.addAll(HTMLcleaner.stripHTML(html).toLowerCase().replaceAll("(?U)[^\\p{Alpha}\\p{Space}]+", " ").replaceAll("(?U)\\p{Space}+", " ").trim().split(" "));
 		addData(index);
-		this.lock.unlockReadWrite();
+	}
+	
+	public void addHtmlText(String htmltext) {
+		WordIndex index = new WordIndex();
+		index.addAll(HTMLcleaner.stripHTML(htmltext).toLowerCase().replaceAll("(?U)[^\\p{Alpha}\\p{Space}]+", " ").replaceAll("(?U)\\p{Space}+", " ").trim().split(" "));
+		addData(index);
 	}
 	
 	
 	public void getDirectory(File file) {
-		this.lock = new ReadWriteLock();
+//		this.lock = new ReadWriteLock();
 		File flist[] = file.listFiles();
 		if (flist == null || flist.length == 0) {
 			return;
@@ -176,10 +187,11 @@ public class InvertedIndex {
 				addHtmlDate(f.getPath().toString());
 			}
 		}
-		this.lock.unlockReadWrite();
+//		this.lock.unlockReadWrite();
 	}
 	
 	public void buildData(File file) {
+//		lock.lockReadWrite();
 		this.lock = new ReadWriteLock();
 		if (file.isDirectory()) {
 			getDirectory(file);
@@ -188,7 +200,7 @@ public class InvertedIndex {
 				addHtmlDate(file.getPath());
 			}
 		}
-		this.lock.unlockReadWrite();
+		lock.unlockReadWrite();
 	}
 	
 	/**
@@ -197,13 +209,13 @@ public class InvertedIndex {
 	 * @return
 	 */
 	private List<Integer> sortInt(Set<Integer> set){
-		this.lock = new ReadWriteLock();
+//		this.lock = new ReadWriteLock();
 		List<Integer> ints = new ArrayList<Integer>();  
 		for(Integer num: set) {
 			ints.add(num);
 		}  
 		Collections.sort(ints);
-		this.lock.unlockReadWrite();
+//		this.lock.unlockReadWrite();
 		return ints;
 	}
 		
@@ -215,13 +227,11 @@ public class InvertedIndex {
 	 * @return
 	 */
 	public String toStringPostion(String word, String html) {
-		this.lock = new ReadWriteLock();
 		String result = "";
 		Set<Integer> set = (Set<Integer>) data.get(word).get(html);
 		for(int position: sortInt(set)) {
 			result += "\n\t\t\t" + position +",";
 		}
-		this.lock.unlockReadWrite();
 		return result.substring(0,result.lastIndexOf(",")) + "\n";
 	}
 
@@ -231,13 +241,11 @@ public class InvertedIndex {
 	 * @return
 	 */
 	public String toStringHtml(String word) {
-		this.lock = new ReadWriteLock();
 		String result = "";
 		TreeMap<String,Set<Integer>> tmp = data.get(word);
 		for(String html: tmp.keySet()) {
 			result += "\n\t\t\""+html+"\": ["+ toStringPostion(word,html) + "\t\t],";
 		}
-		this.lock.unlockReadWrite();
 		return result.substring(0,result.lastIndexOf(",")) + "\n";
 	}
 	
@@ -245,16 +253,61 @@ public class InvertedIndex {
 	 * toString for words
 	 */
 	public String toString() {
-		this.lock = new ReadWriteLock();
 		String result = "{\n";
 		for(String word: data.keySet()) {
 			result +="\t\"" + word +"\": {"
 		+ toStringHtml(word)
 		+"\t},\n";
 		}
-		this.lock.unlockReadWrite();
 		return result.substring(0,result.lastIndexOf(",")) + "\n}";
 	}
+
+	public void addIndexData(String[] words, String path) {
+		lock.lockReadWrite();
+		int wordPosition = 0;
+		for (String word : words) {
+
+			wordPosition += 1;
+			addHelper(word, path, wordPosition);
+		}
+		lock.unlockReadWrite();
+	}
+
+	/**
+	 * helper method to parse word, text files, and position of words in text
+	 * files to map
+	 * 
+	 * @param word
+	 * @param txtFile
+	 * @param position
+	 */
+	private void addHelper(String word, String txtFile, int position) {
+		
+		if (!hasWord(word)) {
+			data.put(word, new TreeMap<>());
+		}
+
+		if (!data.get(word).containsKey(txtFile)) {
+			data.get(word).put(txtFile, new TreeSet<>());
+		}
+
+		data.get(word).get(txtFile).add(position);
+		
+
+	}
+	
+
+
+	
+	public boolean hasWord(String word) {
+		return data.containsKey(word);
+	}
+
+	public void setData(TreeMap<String, TreeMap<String, Set<Integer>>> data) {
+		this.data = data;
+		
+	}
+
 
 
 	

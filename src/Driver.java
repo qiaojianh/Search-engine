@@ -1,4 +1,7 @@
 import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 /**
  * 
@@ -8,18 +11,23 @@ import java.util.ArrayList;
  */
 public class Driver {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, URISyntaxException {
 		
 		//Initializes all members
 		InvertedIndex data = new InvertedIndex();
 		ArgumentMap maps = new ArgumentMap();
 		QuerySearch pdata = new QuerySearch();
 		ArrayList<String> terms = new ArrayList<String>();
+		WebCrawler webCrawler = new WebCrawler();
 		Bulider b = new Bulider();
+		final int default_maxURL = 50; 
+		final int default_port = 8080;
 		
 		int threads = 1;
 		//parse args into Argument map
 		maps.parse(args);
+		
+		
 				
 		//if has flags "-threads" 
 		if(maps.hasFlag("-threads")) {
@@ -51,13 +59,39 @@ public class Driver {
 					if(threads == 1) {
 						data.buildData(file);
 					}else {
-//						data.setData(b.finddata(file, threads));
-						b.finddata(file, threads);
+						data.setData(b.finddata(file, threads));
+//						b.finddata(file, threads);
 					}
 				}else {
 					data.buildData(file);
 				}
 			}
+		}
+		
+		//if has flags "-url"
+		if (maps.hasFlag("-url")) {
+			
+			URL seed = new URL(maps.getString("-url"));
+			int limit = default_maxURL;
+
+			if (maps.hasValue("-limit")) {
+				limit = maps.getInteger("-limit", default_maxURL);
+			}
+			
+				
+			data.setData(webCrawler.crawl(seed, limit, threads));
+					
+		}
+		
+		//if has flags "-port"
+		if(maps.hasFlag("-port")){
+			
+			int inputPort = maps.getInteger("-port", default_port);
+			
+			SearchServer server = new SearchServer(data, inputPort, threads);
+			
+			server.serverStarts();
+			
 		}
 		
 		//if has flags "-index"
@@ -80,8 +114,8 @@ public class Driver {
 					pdata.addData(terms.get(i),data,maps.hasFlag("-exact")?true:false);
 				}
 			}else {
-				b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data);
-//				pdata.setData(b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data));
+//				b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data);
+				pdata.setData(b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data));
 			}
 		}
 		

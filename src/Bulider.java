@@ -8,7 +8,10 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
@@ -35,7 +38,7 @@ public class Bulider {
 	/**
 	 * read terms from provide file
 	 */
-	public  void readTerms(String termsfile, ArrayList<String> terms ) {
+	public void readTerms(String termsfile, ArrayList<String> terms ) {
 		Path termsfilePath = Paths.get(termsfile);
 		Charset charset = Charset.forName("UTF-8");
 		String temp = "";
@@ -67,6 +70,16 @@ public class Bulider {
 		return pdata.getData();
 	}
 	
+	public  HashMap<String,ArrayList<ResultOfPartialSearch>> findPdata( String[] terms ,int threads, boolean excat, InvertedIndex data ){
+		QuerySearch pdata = new QuerySearch();
+		WorkQueue queue = new WorkQueue(threads);
+		for (String term : terms) {
+			queue.execute(new PartialSearchTask(term, pdata,excat,data));
+		}
+		queue.finish();
+		queue.shutdown();
+		return pdata.getData();
+	}
 	/**
 	 * Recursively get all file under the path
 	 * @param allFiles
@@ -148,5 +161,17 @@ public class Bulider {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	/**
+	 * Returns the date and time in a long format. For example: "12:00 am on
+	 * Saturday, January 01 2000".
+	 *
+	 * @return current date and time
+	 */
+	public static String getDate() {
+		String format = "hh:mm a 'on' MMMM dd yyyy";
+		DateFormat formatter = new SimpleDateFormat(format);
+		return formatter.format(new Date());
 	}
 }

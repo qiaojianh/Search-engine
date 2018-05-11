@@ -88,4 +88,8 @@ public class ResultOfPartialSearch implements Comparable<ResultOfPartialSearch>{
 		return Integer.compare(o.count,count);
 	}
 	
+	public String toString() {
+		return "count : "+ count + "\nindex: "+ index+ "\nwhere: " + where;
+	}
+	
 }

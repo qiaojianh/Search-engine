@@ -1,3 +1,5 @@
+import java.util.Set;
+
 public class PartialSearchTask implements Runnable {
 
 	private QuerySearch pdata;
@@ -15,12 +17,22 @@ public class PartialSearchTask implements Runnable {
 		this.data = data;
 	}
 	
+	public int minValue(Set<Integer> ints) {
+		int min = 999999;
+		for(int num : ints) {
+			if(num < min) {
+				min = num;
+			}
+		}
+		return min;
+	}
+	
 	@Override
 	public void run() {
 		// TODO Auto-generated method stub
 
 		pdata.addData(term, data, excat);
-
+		
 		
 	}
 	

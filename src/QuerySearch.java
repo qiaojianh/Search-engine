@@ -19,7 +19,7 @@ public class QuerySearch {
 	/**
 	 * Stores a mapping of words to the information about the words.
 	 */
-	private static HashMap<String,ArrayList<ResultOfPartialSearch>> data;
+	private HashMap<String,ArrayList<ResultOfPartialSearch>> data;
 	
 	/**
 	 * Initializes the data.
@@ -32,9 +32,10 @@ public class QuerySearch {
 		return data;
 	}
 	
-//	public void setData( HashMap<String,ArrayList<ResultOfPartialSearch>> data) {
-//		this.data = data;
-//	}
+	public void setData(HashMap<String,ArrayList<ResultOfPartialSearch>> data) {
+		this.data = data;
+	}
+	
 	
 	/**
 	 * first of all we get each query and go through in  invertedIndex database
