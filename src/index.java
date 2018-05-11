@@ -175,7 +175,7 @@ public class index extends HttpServlet {
 		        	 			}else {
 		        	 			out.printf(" <a style = \"float: right; \"href = \"favoriteHandler?favorite=%s&query=%s\">Add to favorite</a><br>",r.getWhere(),query);
 		        	 			}
-		        	 			out.printf("Index: %s</div></p>\n",r.getIndex());
+		        	 			out.printf("Index: %s</div></p>\n",r.getIndex()); 
 		        	 			
 		        	 		}
 
