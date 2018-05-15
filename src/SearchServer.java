@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletHandler;
@@ -14,6 +15,8 @@ public class SearchServer {
 	static boolean mode;
 	static boolean ifPartial;
 	static String lastVisitTime;
+	static String user;
+	static HashMap<String,Userdata> Userdata;
 	
 
 
@@ -24,7 +27,8 @@ public class SearchServer {
 		SearchServer.searchHistory = new ArrayList<HistoryObject>();
 		SearchServer.visitHistory = new ArrayList<HistoryObject>();
 		SearchServer.favorite = new ArrayList<String>();
-		SearchServer.lastVisitTime = "not yet";
+		SearchServer.Userdata = new HashMap<String,Userdata>();
+		SearchServer.lastVisitTime = null;
 		mode = true;
 		ifPartial = false;
 		
@@ -42,6 +46,11 @@ public class SearchServer {
 		handler.addServletWithMapping(new ServletHolder(new PrivateMode()), "/privateMode");
 		handler.addServletWithMapping(new ServletHolder(new PartialMode()), "/partialMode");
 		handler.addServletWithMapping(new ServletHolder(new NewSearch()), "/newSearch");
+		handler.addServletWithMapping(LoginUserServlet.class, "/login");
+		handler.addServletWithMapping(LoginRegisterServlet.class, "/register");
+		handler.addServletWithMapping(LoginWelcomeServlet.class, "/welcome");
+		handler.addServletWithMapping(LoginRedirectServlet.class, "/r");
+
 		
 		server.setHandler(handler);
 		try{

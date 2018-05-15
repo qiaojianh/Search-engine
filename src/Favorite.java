@@ -18,7 +18,7 @@ public class Favorite extends HttpServlet {
 		         out.println("<HTML>");
 		         out.println("  <HEAD><TITLE>Search engine</TITLE></HEAD>");
 		         out.println("  <BODY>");
-		         out.print(" <p> History page </p>");
+		         out.print(" <p> Favorite page </p>");
 		         for(String s: SearchServer.favorite) {
 		        	 	out.printf(" <p>%s<br/>",s);
 		         }

@@ -60,7 +60,6 @@ public class Driver {
 						data.buildData(file);
 					}else {
 						data.setData(b.finddata(file, threads));
-//						b.finddata(file, threads);
 					}
 				}else {
 					data.buildData(file);
@@ -114,7 +113,6 @@ public class Driver {
 					pdata.addData(terms.get(i),data,maps.hasFlag("-exact")?true:false);
 				}
 			}else {
-//				b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data);
 				pdata.setData(b.findPdata(terms,threads,maps.hasFlag("-exact")?true:false, data));
 			}
 		}
